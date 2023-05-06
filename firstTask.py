@@ -32,7 +32,7 @@ def eulerMethod(a, b, y0, n):
     y[0] = y0
     for i in range(n):
         y[i+1] = y[i] + h*f(x[i], y[i])
-    return y
+    return x,y
 
 def runge_kutta_method(a, b, y0, n):
     h = (b-a)/n
@@ -44,7 +44,7 @@ def runge_kutta_method(a, b, y0, n):
         k2 = h*f(x[i] + 1/2*h, y[i] + 1/2*k1)
         k3 = h*f(x[i] + 3/4*h, y[i] + 3/4*k2)
         y[i+1] = y[i] + (2*k1 + 3*k2 + 4*k3)/9
-    return y
+    return x, y
 
 def requiredError(a, b, y0, p, e, method):
     n = 1
@@ -52,18 +52,18 @@ def requiredError(a, b, y0, p, e, method):
     h=0
     
     while True:
-        y1 = method(a, b, y0, n)
-        y2 = method(a, b, y0, 2*n)
+        x1,y1 = method(a, b, y0, n)
+        x2,y2 = method(a, b, y0, 2*n)
         h = (b-a)/2*n
         err = calculateError(y1, y2, p)
         if err <= e:
-            return y2
+            return x2,y2
         if ((prevErr - err) == 0):
             print('процесс решения прекращен, т.к. с уменьшением шага погрешность не уменьшается')
-            return y2
+            return x2,y2
         if (h == 0):
             print('процесс решения прекращен, т.к. значение шага стало недопустимо малым')
-            return y2
+            return x2,y2
         prevErr = err
         n *= 2
 
@@ -74,8 +74,21 @@ b = 4
 n = 16
 e = 0.0000000001
 
-#y = requiredError(a, b, y0, 1, e, eulerMethod)
-y2 = requiredError(a, b, y0, 3, e, runge_kutta_method)
+#x,y = requiredError(a, b, y0, 1, e, eulerMethod)
+x2,y2 = requiredError(a, b, y0, 3, e, runge_kutta_method)
+yExact = getExactY(x2,getC())
+
+plot = plt.figure()
+
+graph1 = plot.add_subplot(221)
+graph1.plot(x2,y2,"r")
+graph1.grid()
+
+graph2 = plot.add_subplot(222)
+graph2.plot(x2,yExact,"g")
+graph2.grid()
+
+plt.show()
 
 error = calcErrorLastPoint(y2, b, 3)
 
