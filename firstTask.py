@@ -47,7 +47,7 @@ def runge_kutta_method(a, b, y0, n):
     return x, y
 
 def requiredError(a, b, y0, p, e, method):
-    n = 1
+    n = 16
     prevErr = -1
     h=0
     
@@ -57,6 +57,7 @@ def requiredError(a, b, y0, p, e, method):
         h = (b-a)/2*n
         err = calculateError(y1, y2, p)
         if err <= e:
+            print(n)
             return x2,y2
         if ((prevErr - err) == 0):
             print('процесс решения прекращен, т.к. с уменьшением шага погрешность не уменьшается')
@@ -71,23 +72,18 @@ def requiredError(a, b, y0, p, e, method):
 
 a = 0.5
 b = 4
-n = 16
-e = 0.0000000001
+e = 0.0001
 
 #x,y = requiredError(a, b, y0, 1, e, eulerMethod)
 x2,y2 = requiredError(a, b, y0, 3, e, runge_kutta_method)
 yExact = getExactY(x2,getC())
 
-plot = plt.figure()
 
-graph1 = plot.add_subplot(221)
-graph1.plot(x2,y2,"r")
-graph1.grid()
 
-graph2 = plot.add_subplot(222)
-graph2.plot(x2,yExact,"g")
-graph2.grid()
-
+plt.plot(x2,y2,"r")
+plt.plot(x2,yExact,"g")
+plt.legend(['Численное решение','Аналитическое решение'], loc=2)
+plt.grid()
 plt.show()
 
 error = calcErrorLastPoint(y2, b, 3)
